@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轮播图</title>
+    <script src="js/animate.js"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        .carsouel {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            border: 5px solid skyblue;
+            margin: 200px auto;
+            overflow: hidden;
+        }
+
+        .carsouel ul {
+            position: absolute;
+            width: 600%;
+            height: 100%;
+        }
+
+        .carsouel ul li {
+            float: left;
+        }
+
+        .carsouel:hover .btn {
+            display: block;
+        }
+
+        .btn {
+            display: none;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+        }
+
+        .btn-left {
+            left: 0;
+        }
+
+        .btn-right {
+            right: 0;
+        }
+
+        .carsouel ol {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 10px;
+            z-index: 2;
+        }
+
+        .carsouel ol li {
+            float: left;
+            width: 10px;
+            height: 10px;
+            margin: 0 4px;
+            border-radius: 50%;
+            background-color: white;
+        }
+
+        .carsouel ol .active {
+            background-color: skyblue;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="carsouel">
+        <ul>
+            <li><img src="images/9.JPG" alt=""></li>
+            <li><img src="images/10.JPG" alt=""></li>
+            <li><img src="images/11.JPG" alt=""></li>
+            <li><img src="images/12.JPG" alt=""></li>
+        </ul>
+        <div class="btn btn-left"><img src="images/left.png" alt=""></div>
+        <div class="btn btn-right"><img src="images/right.png" alt=""></div>
+        <ol class="circle">
+        </ol>
+    </div>
+    <script>
+        var carsouel = document.querySelector('.carsouel');
+        var lis = carsouel.querySelectorAll('ul li');
+        var ol = carsouel.querySelector('ol');
+        var ul = carsouel.querySelector('ul');
+        var btnLeft = carsouel.querySelector('.btn-left');
+        var btnRight = carsouel.querySelector('.btn-right');
+        var num = 0;
+        var circle = 0;
+        var flag = true;
+
+        for (let i = 0; i < lis.length; i++) {
+            let li = document.createElement('li');
+            li.setAttribute('index', i);
+            ol.appendChild(li);
+            li.addEventListener('click', function () {
+                for (let i = 0; i < ol.children.length; i++) {
+                    ol.children[i].className = '';
+                }
+                this.className = 'active';
+                var index = this.getAttribute('index');
+                move(ul, -index * lis[i].offsetWidth);
+                num = index;
+                circle = index;
+
+            })
+        }
+        ol.children[0].className = 'active';
+        var last = lis[0].cloneNode(true);
+        ul.appendChild(last);
+        btnRight.addEventListener('click', function () {
+           if(flag) {
+               flag =false;
+            if (num == ul.children.length - 1) {
+                ul.style.left = 0;
+                num = 0;
+            }
+            num++;
+            circle++;
+            if (circle >= ol.children.length) {
+                circle = 0;
+            }
+            btnChange();
+           }
+        })
+        btnLeft.addEventListener('click',function() {
+           if(flag) {
+               flag = false;
+            if(num <= 0) {
+                num = ul.children.length - 1;
+                ul.style.left = -num * (carsouel.offsetWidth) + 'px';
+            }
+            num --;
+            if(circle <= 0) {
+                circle = ol.children.length;
+            }
+            circle --;
+            btnChange();
+           }
+            
+        })
+        
+        var timer = setInterval(() => {
+            btnRight.click();
+        }, 2000);
+        carsouel.addEventListener('mouseleave',function() {
+            timer = setInterval(() => {
+            btnRight.click();
+        }, 2000);
+        })
+        carsouel.addEventListener('mouseenter',function() {
+            clearInterval(timer);
+            timer = null;
+        })
+
+
+        function btnChange() {
+            for (let i = 0; i < ol.children.length; i++) {
+                ol.children[i].className = '';
+            }
+            ol.children[circle].className = 'active';
+            move(ul, -num * carsouel.offsetWidth,function() {
+                flag = true;
+            });
+        }
+    </script>
+</body>
+
+</html>
